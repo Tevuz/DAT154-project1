@@ -1,19 +1,29 @@
 #include <windows.h>
 #include <iostream>
+#include <functional>
+#include <map>
 
-//ATOM                MyRegisterClass(HINSTANCE hInstance);
-//BOOL                InitInstance(HINSTANCE, int);
-LRESULT CALLBACK    WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-//INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-//INT_PTR CALLBACK    MyDlg(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 class Window {
 public:
+    static Window* instance;
+public:
     Window();
     ~Window();
+
+    void start();
+    void render();
+    void update();
+
+    void setRenderCallback(std::function<void()> render);
+    void setUpdateCallback(std::function<void()> update);
 
     bool ProcessMessages();
 private:
     HINSTANCE m_hInstance;
     HWND m_hWnd;
+
+    std::function<void()> m_hRender = [](){};
+    std::function<void()> m_hUpdate = [](){};
 };
