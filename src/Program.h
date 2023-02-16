@@ -1,4 +1,7 @@
+#pragma once
+
 #include <windows.h>
+#include "GraphicEngine.h"
 
 class Program {
 public:
@@ -6,5 +9,5 @@ public:
     ~Program();
 
     void update();
-    void render(HWND hWnd);
+    void render(GraphicEngine g);
 };

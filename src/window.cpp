@@ -13,10 +13,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case WM_TIMER:
             if (Window::instance != NULL)
                 Window::instance->update();
+            InvalidateRect(hWnd, 0, true);
             break;
         case WM_PAINT:
-            if (Window::instance != NULL)
-            Window::instance->render(hWnd);
+            if (Window::instance != NULL){
+                GraphicEngine* g = new GraphicEngine(hWnd);
+                Window::instance->render(*g);
+                delete g;
+            }
             break;
     }
 
@@ -98,10 +102,10 @@ bool Window::ProcessMessages()
     return true;
 }
 
-void Window::render(HWND hWnd) { m_hRender(hWnd); };
+void Window::render(GraphicEngine hWnd) { m_hRender(hWnd); };
 void Window::update() { m_hUpdate(); };
 
-void Window::setRenderCallback(std::function<void(HWND)> render) { m_hRender = render; };
+void Window::setRenderCallback(std::function<void(GraphicEngine)> render) { m_hRender = render; };
 void Window::setUpdateCallback(std::function<void()> update) { m_hUpdate = update; };
 
 

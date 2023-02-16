@@ -3,4 +3,4 @@ project(INN1)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(INN1 src/main.cpp src/window.cpp src/window.h src/Program.cpp src/Program.h)
+add_executable(INN1 src/main.cpp src/window.cpp src/window.h src/Program.cpp src/Program.h src/GraphicEngine.cpp src/GraphicEngine.h)
