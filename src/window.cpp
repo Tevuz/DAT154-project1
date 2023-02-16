@@ -78,6 +78,7 @@ Window::~Window()
 {
     const wchar_t* CLASS_NAME = L"Traffic Light Window Class";
     UnregisterClassW(CLASS_NAME, m_hInstance);
+    KillTimer(m_hWnd, 1001u);
 }
 
 void Window::start()
