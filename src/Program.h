@@ -4,5 +4,5 @@ public:
     ~Program();
 
     void update();
-    void render();
+    void render(HWND hWnd);
 };

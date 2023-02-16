@@ -16,7 +16,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             break;
         case WM_PAINT:
             if (Window::instance != NULL)
-            Window::instance->render();
+            Window::instance->render(hWnd);
             break;
     }
 

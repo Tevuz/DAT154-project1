@@ -64,7 +64,7 @@ int main() {
 
     Program* pProgram = new Program();
     Window* pWindow = new Window();
-    pWindow->setRenderCallback([pProgram](){ pProgram->render();});
+    pWindow->setRenderCallback([pProgram](auto hWnd){ pProgram->render(hWnd);});
     pWindow->setUpdateCallback([pProgram](){ pProgram->update();});
     pWindow->start();
     pWindow->update();
