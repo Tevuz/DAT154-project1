@@ -1,7 +1,12 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
+#include "window.h"
+#include "program.h"
 
-class Car {
+/*class Car {
+
     const float VELOCITY_MAX = 1.0f;
     const float SPACING_MIN = 0.2f;
 
@@ -52,9 +57,24 @@ class Road {
 class Intersection {
     Road x;
     Road y;
-};
+};*/
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << "Starting Application" << std::endl;
+
+    //Program* pProgram = new Program();
+    Window* pWindow = new Window();
+
+
+    while (pWindow->ProcessMessages())
+    {
+        Sleep(50);
+    }
+
+    std::cout << "Closing Application" << std::endl;
+
+    delete pWindow;
+    //delete pProgram;
+
     return 0;
 }
