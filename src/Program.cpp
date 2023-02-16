@@ -1,6 +1,8 @@
 #include "Program.h"
 #include <iostream>
 #include <vector>
+#include <ntdef.h>
+#include <commctrl.h>
 
 struct Car
 {
@@ -16,14 +18,21 @@ const int GO = 2;
 const int YIELD = 3;
 struct TrafficLight
 {
-
     int state = STOP;
 };
 
-const float BEGIN_POSITION = -1.0;
-const float END_POSITION = 1.0;
-const float LIGHT_POSITION = -0.2;
-const float MIN_DISTANCE = 0.05;
+const int ROAD_WIDTH = 200;
+const int ROAD_STRIPE_LENGTH = 80;
+const int ROAD_STRIPE_WIDTH = 20;
+const int CAR_WIDTH = 50;
+const int CAR_LENGTH= 90;
+const float CAR_SPEED= 150;
+const float MIN_DISTANCE = 30.0;
+const float STOPPING_DISTANCE = MIN_DISTANCE * 2.5f;
+
+const float BEGIN_POSITION = -900.0;
+const float END_POSITION = 600.0;
+const float LIGHT_POSITION = -ROAD_WIDTH;
 
 std::vector<Car>* x_cars;
 std::vector<Car>* y_cars;
@@ -39,7 +48,11 @@ Program::Program()
     y_light = new TrafficLight();
 
     x_cars->push_back({BEGIN_POSITION, 0, 0, 0});
-    y_cars->push_back({BEGIN_POSITION, 0, 0, 0});
+    x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE), 0, 0, 0});
+    x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 2.0f, 0, 0, 0});
+    x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 3.0f, 0, 0, 0});
+    x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 4.0f, 0, 0, 0});
+    //y_cars->push_back({BEGIN_POSITION, 0, 0, 0});
 }
 
 Program::~Program()
@@ -52,20 +65,30 @@ Program::~Program()
 
 float updateCar(Car* car, TrafficLight light, float pos_next, float delta)
 {
-    if (car->pos < LIGHT_POSITION && light.state != GO)
-        pos_next = LIGHT_POSITION;
+    float target = pos_next - car->pos - MIN_DISTANCE;
 
-    float distance = pos_next - car->pos - MIN_DISTANCE;
-    distance *= 0.3f;
-    distance = distance < 0.0f ? 0.0f : distance;
-    distance = distance > 1.0f ? 1.0f : distance;
-    car->acc += distance * (1.0f - car->acc) * delta;
-    car->vel += car->acc * delta;
+    if (light.state != GO && car->pos < LIGHT_POSITION && pos_next > LIGHT_POSITION)
+        target = LIGHT_POSITION - car->pos - MIN_DISTANCE;
+
     car->pos += car->vel * delta;
 
-    std::cout << car->vel << std::endl;
+    car->vel += car->acc * delta;
+    car->vel = std::min(+CAR_SPEED, car->vel);
+    car->vel = std::max(-CAR_SPEED, car->vel);
 
-    return car->pos - car->len;
+
+    float distance = abs(target);
+
+    float s = CAR_SPEED * std::min(1.0f, distance / STOPPING_DISTANCE);
+
+    float f = distance < 5.0 ? -car->vel : s * target / distance - car->vel;
+
+
+    car->acc = f * 6.0f;
+    car->acc = std::min(+200.0f, car->acc);
+    car->acc = std::max(-200.0f, car->acc);
+
+    return car->pos - CAR_LENGTH;
 }
 
 void Program::update()
@@ -80,16 +103,10 @@ void Program::update()
     pos_next = END_POSITION;
     for (auto car = y_cars->begin(); car != y_cars->end(); car++)
         pos_next = updateCar(&*car, *y_light, pos_next, delta);
-
 }
 
 void Program::render(GraphicEngine g)
 {
-    const int ROAD_WIDTH = 200;
-    const int ROAD_STRIPE_LENGTH = 80;
-    const int ROAD_STRIPE_WIDTH = 20;
-    const int CAR_WIDTH = 50;
-    const int CAR_LENGTH= 100;
 
     g.setLineColorDisabled();
 
@@ -118,11 +135,11 @@ void Program::render(GraphicEngine g)
     // cars
     g.setFillColor(255, 64, 64);
     for (auto car = x_cars->begin(); car != x_cars->end(); car++)
-        g.fillRect((g.width >> 1) + car->pos * 400.0, (g.height >> 1) - (ROAD_WIDTH >> 2) - (CAR_WIDTH >> 1) - (ROAD_STRIPE_WIDTH >> 2), CAR_LENGTH, CAR_WIDTH);
+        g.fillRect((g.width >> 1) + car->pos, (g.height >> 1) - (ROAD_WIDTH >> 2) - (CAR_WIDTH >> 1) - (ROAD_STRIPE_WIDTH >> 2), CAR_LENGTH, CAR_WIDTH);
 
     g.setFillColor(64, 64, 255);
     for (auto car = y_cars->begin(); car != y_cars->end(); car++)
-        g.fillRect((g.width >> 1) - (ROAD_WIDTH >> 2) - (CAR_WIDTH >> 1) - (ROAD_STRIPE_WIDTH >> 2), (g.height >> 1) + car->pos * 400.0, CAR_WIDTH, CAR_LENGTH);
+        g.fillRect((g.width >> 1) - (ROAD_WIDTH >> 2) - (CAR_WIDTH >> 1) - (ROAD_STRIPE_WIDTH >> 2), (g.height >> 1) + car->pos, CAR_WIDTH, CAR_LENGTH);
 
 
     // lights
