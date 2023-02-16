@@ -11,17 +11,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             PostQuitMessage(0);
             return 0;
         case WM_TIMER:
+            if (Window::instance != NULL)
+                Window::instance->update();
             break;
         case WM_PAINT:
+            if (Window::instance != NULL)
+            Window::instance->render();
             break;
     }
 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
+Window* Window::instance;
+
 Window::Window()
     : m_hInstance(GetModuleHandle(nullptr))
 {
+    Window::instance = this;
 
     const wchar_t* CLASS_NAME = L"Traffic Light Window Class";
 
@@ -61,15 +68,18 @@ Window::Window()
     if (m_hWnd == 0)
         std::cout << "Could not create Window: " << GetLastError() << std::endl;
 
-    ShowWindow(m_hWnd, SW_SHOW);
-
-    SetTimer(m_hWnd, 1001u, 100, NULL);
 }
 
 Window::~Window()
 {
     const wchar_t* CLASS_NAME = L"Traffic Light Window Class";
     UnregisterClassW(CLASS_NAME, m_hInstance);
+}
+
+void Window::start()
+{
+    ShowWindow(m_hWnd, SW_SHOW);
+    SetTimer(m_hWnd, 1001u, 100, NULL);
 }
 
 bool Window::ProcessMessages()
@@ -87,6 +97,12 @@ bool Window::ProcessMessages()
 
     return true;
 }
+
+void Window::render() { m_hRender(); };
+void Window::update() { m_hUpdate(); };
+
+void Window::setRenderCallback(std::function<void()> render) { m_hRender = render; };
+void Window::setUpdateCallback(std::function<void()> update) { m_hUpdate = update; };
 
 
 
