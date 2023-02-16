@@ -30,7 +30,7 @@ const float CAR_SPEED= 150;
 const float MIN_DISTANCE = 30.0;
 const float STOPPING_DISTANCE = MIN_DISTANCE * 2.5f;
 
-const float BEGIN_POSITION = -900.0;
+const float BEGIN_POSITION = -800.0;
 const float END_POSITION = 600.0;
 const float LIGHT_POSITION = -ROAD_WIDTH;
 
@@ -45,6 +45,7 @@ Program::Program()
     x_cars = new std::vector<Car>;
     y_cars = new std::vector<Car>;
     x_light = new TrafficLight();
+    x_light->state = GO;
     y_light = new TrafficLight();
 
     x_cars->push_back({BEGIN_POSITION, 0, 0, 0});
@@ -52,6 +53,11 @@ Program::Program()
     x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 2.0f, 0, 0, 0});
     x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 3.0f, 0, 0, 0});
     x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 4.0f, 0, 0, 0});
+
+    y_cars->push_back({BEGIN_POSITION, 0, 0, 0});
+    y_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE), 0, 0, 0});
+    y_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 2.0f, 0, 0, 0});
+    y_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 3.0f, 0, 0, 0});
     //y_cars->push_back({BEGIN_POSITION, 0, 0, 0});
 }
 
