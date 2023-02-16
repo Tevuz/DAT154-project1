@@ -67,8 +67,8 @@ float updateCar(Car* car, TrafficLight light, float pos_next, float delta)
 {
     float target = pos_next - car->pos - MIN_DISTANCE;
 
-    if (light.state != GO && car->pos < LIGHT_POSITION && pos_next > LIGHT_POSITION)
-        target = LIGHT_POSITION - car->pos - MIN_DISTANCE;
+    if (light.state != GO && car->pos < LIGHT_POSITION + MIN_DISTANCE && pos_next > LIGHT_POSITION + MIN_DISTANCE)
+        target = LIGHT_POSITION - car->pos;
 
     car->pos += car->vel * delta;
 
