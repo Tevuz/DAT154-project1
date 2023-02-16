@@ -17,7 +17,6 @@ int main() {
 
     while (pWindow->ProcessMessages())
     {
-        Sleep(50);
     }
 
     std::cout << "Closing Application" << std::endl;
