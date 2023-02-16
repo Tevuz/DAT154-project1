@@ -22,6 +22,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 delete g;
             }
             break;
+        case WM_LBUTTONDOWN:
+            if (Window::instance != NULL)
+                Window::instance->input(TrafficApp::MOUSE_LCLICK);
+            break;
     }
 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
@@ -103,11 +107,13 @@ bool Window::ProcessMessages()
     return true;
 }
 
-void Window::render(GraphicEngine hWnd) { m_hRender(hWnd); };
-void Window::update() { m_hUpdate(); };
+void Window::render(GraphicEngine hWnd) { m_hRender(hWnd); }
+void Window::update() { m_hUpdate(); }
+void Window::input(Event e) { m_hInput(e); }
 
-void Window::setRenderCallback(std::function<void(GraphicEngine)> render) { m_hRender = render; };
-void Window::setUpdateCallback(std::function<void()> update) { m_hUpdate = update; };
+void Window::setRenderCallback(std::function<void(GraphicEngine)> render) { m_hRender = render; }
+void Window::setUpdateCallback(std::function<void()> update) { m_hUpdate = update; }
+void Window::setInputCallback(std::function<void(Event)> input) { m_hInput = input; }
 
 
 

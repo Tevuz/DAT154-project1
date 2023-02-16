@@ -83,7 +83,6 @@ float updateCar(Car* car, TrafficLight light, float pos_next, float delta)
 
     float f = distance < 5.0 ? -car->vel : s * target / distance - car->vel;
 
-
     car->acc = f * 6.0f;
     car->acc = std::min(+200.0f, car->acc);
     car->acc = std::max(-200.0f, car->acc);
@@ -103,6 +102,15 @@ void Program::update()
     pos_next = END_POSITION;
     for (auto car = y_cars->begin(); car != y_cars->end(); car++)
         pos_next = updateCar(&*car, *y_light, pos_next, delta);
+}
+
+void Program::input(Event e)
+{
+    x_light->state++;
+    x_light->state &= 3;
+
+    y_light->state++;
+    y_light->state &= 3;
 }
 
 void Program::render(GraphicEngine g)
