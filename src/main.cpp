@@ -16,7 +16,6 @@ int main() {
     pWindow->setInputCallback([pProgram](auto e) { pProgram->input(e); });
 
     pWindow->start();
-    pWindow->update();
 
     while (pWindow->ProcessMessages()) {}
 

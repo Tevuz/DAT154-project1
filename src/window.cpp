@@ -13,7 +13,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case WM_TIMER:
             if (Window::instance != NULL)
                 Window::instance->update();
-            InvalidateRect(hWnd, 0, false);
+            InvalidateRect(hWnd, 0, true);
             break;
         case WM_PAINT:
             if (Window::instance != NULL){
