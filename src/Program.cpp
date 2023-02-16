@@ -149,7 +149,7 @@ void Program::render(GraphicEngine g)
     // cars
     g.setFillColor(255, 64, 64);
     for (auto car = x_cars->begin(); car != x_cars->end(); car++)
-        g.fillRect((g.width >> 1) + car->pos, (g.height >> 1) - (ROAD_WIDTH >> 2) - (CAR_WIDTH >> 1) - (ROAD_STRIPE_WIDTH >> 2), CAR_LENGTH, CAR_WIDTH);
+        g.fillRect((g.width >> 1) + car->pos, (g.height >> 1) + (ROAD_WIDTH >> 2) - (CAR_WIDTH >> 1) - (ROAD_STRIPE_WIDTH >> 2), CAR_LENGTH, CAR_WIDTH);
 
     g.setFillColor(64, 64, 255);
     for (auto car = y_cars->begin(); car != y_cars->end(); car++)
