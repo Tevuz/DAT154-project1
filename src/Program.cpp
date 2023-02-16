@@ -34,6 +34,7 @@ const float BEGIN_POSITION = -800.0;
 const float END_POSITION = 600.0;
 const float LIGHT_POSITION = -ROAD_WIDTH;
 
+// TODO: use a pool structure
 std::vector<Car>* x_cars;
 std::vector<Car>* y_cars;
 
@@ -108,6 +109,8 @@ void Program::update()
     pos_next = END_POSITION;
     for (auto car = y_cars->begin(); car != y_cars->end(); car++)
         pos_next = updateCar(&*car, *y_light, pos_next, delta);
+
+    // TODO: car spawn and despawn
 }
 
 void Program::input(Event e)
@@ -117,11 +120,11 @@ void Program::input(Event e)
 
     y_light->state++;
     y_light->state &= 3;
+    // TODO: traffic light improvement
 }
 
 void Program::render(GraphicEngine g)
 {
-
     g.setLineColorDisabled();
 
     // ground
@@ -157,4 +160,5 @@ void Program::render(GraphicEngine g)
 
 
     // lights
+    // TODO: lights graphic
 }
