@@ -98,10 +98,10 @@ bool Window::ProcessMessages()
     return true;
 }
 
-void Window::render() { m_hRender(); };
+void Window::render(HWND hWnd) { m_hRender(hWnd); };
 void Window::update() { m_hUpdate(); };
 
-void Window::setRenderCallback(std::function<void()> render) { m_hRender = render; };
+void Window::setRenderCallback(std::function<void(HWND)> render) { m_hRender = render; };
 void Window::setUpdateCallback(std::function<void()> update) { m_hUpdate = update; };
 
 
