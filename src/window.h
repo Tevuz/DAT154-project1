@@ -31,6 +31,9 @@ private:
     HINSTANCE m_hInstance;
     HWND m_hWnd;
 
+    const UINT_PTR TIMER_MAIN = 1;
+    const UINT_PTR TIMER_LIGHT_INTERVAL = 2u;
+
     const float delta = 1.0 / 60.0;
 
     std::function<void(GraphicEngine)> m_hRender = [](auto){};
