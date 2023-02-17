@@ -3,6 +3,7 @@
 #include <vector>
 #include <queue>
 #include <sstream>
+#include <valarray>
 
 struct Car
 {
@@ -32,20 +33,24 @@ const int CAR_WIDTH = 50;
 const int CAR_LENGTH= 90;
 const float CAR_MAX_SPEED= 200.0f;
 const float CAR_MAX_ACCELERATION = 350.0f;
-const float CAR_FORCE_MULTIPLIER = 12.0f;
+const float CAR_FORCE_MULTIPLIER = 175.0f;
 const float DISTANCE_MIN = 20.0f;
-const float DISTANCE_DEADZONE = 5.0f;
-const float DISTANCE_TO_STOP = DISTANCE_MIN * 3.5f;
+const float DISTANCE_DEADZONE = 15.0f;
+const float DISTANCE_TO_STOP = DISTANCE_MIN * 6.0f;
 
-const float BEGIN_POSITION = -800.0;
-const float END_POSITION = 800.0;
-const float TARGET_POSITION = 2000.0;
+const float BEGIN_POSITION = -2000.0;
+const float END_POSITION = 2000.0;
+const float TARGET_POSITION = INFINITY;
 
 const float LIGHT_POSITION = -ROAD_WIDTH;
 const int LIGHT_WIDTH = 30;
 
 float X_SPAWN_RATE = 0.1f;
+float X_SPAWN_TIME = 0.0f;
+float X_SPAWN_ROLL = 0.0f;
 float Y_SPAWN_RATE = 0.1f;
+float Y_SPAWN_TIME = 0.0f;
+float Y_SPAWN_ROLL = 0.0f;
 
 std::deque<Car>* x_cars;
 std::deque<Car>* y_cars;
@@ -78,19 +83,19 @@ float updateCar(Car* car, TrafficLight light, float pos_next, float delta)
     if (light.state != GO && car->pos < LIGHT_POSITION + DISTANCE_MIN && pos_next > LIGHT_POSITION + DISTANCE_MIN)
         target = LIGHT_POSITION - car->pos;
 
+    float distance = abs(target);
+
     car->pos += car->vel * delta;
 
     car->vel += car->acc * delta;
     car->vel = std::min(+CAR_MAX_SPEED, car->vel);
     car->vel = std::max(-CAR_MAX_SPEED, car->vel);
 
-    float distance = abs(target);
-
     float desired_speed = CAR_MAX_SPEED * std::min(1.0f, distance / DISTANCE_TO_STOP);
 
-    float force = distance < DISTANCE_DEADZONE ? -car->vel : desired_speed * target / distance - car->vel;
+    float force = distance < DISTANCE_DEADZONE ? -car->vel : (desired_speed * target / distance - car->vel);
 
-    car->acc = force * CAR_FORCE_MULTIPLIER;
+    car->acc = force * (distance < DISTANCE_DEADZONE ? (1.0f + distance * CAR_FORCE_MULTIPLIER / DISTANCE_DEADZONE) : CAR_FORCE_MULTIPLIER);
     car->acc = std::min(+CAR_MAX_ACCELERATION, car->acc);
     car->acc = std::max(-CAR_MAX_ACCELERATION, car->acc);
 
@@ -121,20 +126,29 @@ void Program::update(float delta)
         x_cars->pop_front();
 
     // spawn cars x
-    if (x_cars->empty() || (car = x_cars->back(), car.pos - CAR_LENGTH - DISTANCE_MIN > BEGIN_POSITION)){
-        if (((float) rand() / (float) RAND_MAX) < X_SPAWN_RATE  * delta) {
-            x_cars->push_back({BEGIN_POSITION, 0, 0, (uint8_t) (rand() % num_colors), true});
-        }
+    X_SPAWN_TIME += delta;
+    if (X_SPAWN_ROLL < (1.0 - std::exp(-X_SPAWN_RATE * X_SPAWN_TIME))) {
+        float pos;
+        if (x_cars->empty())
+            pos = BEGIN_POSITION;
+        else
+            pos = std::min(BEGIN_POSITION, (car = x_cars->back(), car.pos - CAR_LENGTH - DISTANCE_MIN));
+        x_cars->push_back({pos, 0, 0, (uint8_t) (rand() % num_colors), true});
+        X_SPAWN_ROLL = ((float) rand() / (float) RAND_MAX);
+        X_SPAWN_TIME = 0.0f;
     }
 
     // despawn cars y
-    while (!y_cars->empty() && !y_cars->front().enabled)
-        y_cars->pop_front();
-    // spawn cars y
-    if (y_cars->empty() || (car = y_cars->back(), car.pos - CAR_LENGTH - DISTANCE_MIN > BEGIN_POSITION)){
-        if (((float) rand() / (float) RAND_MAX) < Y_SPAWN_RATE  * delta) {
-            y_cars->push_back({BEGIN_POSITION, 0, 0, (uint8_t) (rand() % num_colors), true});
-        }
+    Y_SPAWN_TIME += delta;
+    if (Y_SPAWN_ROLL < (1.0 - std::exp(-Y_SPAWN_RATE * Y_SPAWN_TIME))) {
+        float pos;
+        if (y_cars->empty())
+            pos = BEGIN_POSITION;
+        else
+            pos = std::min(BEGIN_POSITION, (car = y_cars->back(), car.pos - CAR_LENGTH - DISTANCE_MIN));
+        y_cars->push_back({pos, 0, 0, (uint8_t) (rand() % num_colors), true});
+        Y_SPAWN_ROLL = ((float) rand() / (float) RAND_MAX);
+        Y_SPAWN_TIME = 0.0f;
     }
 }
 
@@ -154,11 +168,11 @@ void Program::input(WPARAM param)
             std::cout << "decreasing x spawn rate to " << X_SPAWN_RATE << std::endl;
             break;
         case VK_RIGHT:
-            X_SPAWN_RATE = std::min(X_SPAWN_RATE + 0.1f, 1.0f);
+            X_SPAWN_RATE = std::min(X_SPAWN_RATE + 0.1f, 10.0f);
             std::cout << "increasing x spawn rate to " << X_SPAWN_RATE << std::endl;
             break;
         case VK_UP:
-            Y_SPAWN_RATE = std::min(Y_SPAWN_RATE + 0.1f, 1.0f);
+            Y_SPAWN_RATE = std::min(Y_SPAWN_RATE + 0.1f, 10.0f);
             std::cout << "increasing y spawn rate to " << Y_SPAWN_RATE << std::endl;
             break;
         case VK_DOWN:
