@@ -1,9 +1,34 @@
 #include "window.h"
 
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    switch (message)
+    {
+        case WM_INITDIALOG:
+            return (INT_PTR)TRUE;
+
+        case WM_COMMAND:
+            if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+            {
+                EndDialog(hDlg, LOWORD(wParam));
+                return (INT_PTR)TRUE;
+            }
+            break;
+    }
+    return (INT_PTR)FALSE;
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
     {
+        case WM_CREATE:
+            /*if (Window::instance != NULL)
+            {
+                Window::instance->showDialog();
+            }*/
+            break;
         case WM_CLOSE:
             DestroyWindow(hWnd);
             break;
@@ -91,10 +116,37 @@ Window::~Window()
     KillTimer(m_hWnd, 1001u);
 }
 
+
 void Window::start()
 {
     ShowWindow(m_hWnd, SW_SHOW);
-    SetTimer(m_hWnd, 1001u, 1000.0/60.0, NULL);
+    SetTimer(m_hWnd, TIMER_MAIN, 1000.0/60.0, NULL);
+
+}
+
+void Window::showDialog(){
+    /*DWORD dwStyle;
+    DWORD dwExStyle;
+
+    RECT rcAdjust = { 0, 0, 400, 400 };
+    AdjustWindowRectEx(&rcAdjust, dwStyle, FALSE, dwExStyle);
+    int cxDlg = rcAdjust.right - rcAdjust.left;
+    int cyDlg = rcAdjust.bottom - rcAdjust.top;
+
+    POINT pt = { 400, 400 };
+    ClientToScreen(m_hWnd, &pt);
+
+    BOOL fWasVisible = dwStyle & WS_VISIBLE;
+    dwStyle &= ~WS_VISIBLE;
+
+    HWND hdlg = CreateWindowEx(
+            dwExStyle, nullptr, nullptr, dwStyle & 0xFFFF0000,
+            pt.x, pt.y,cxDlg, cyDlg, m_hWnd, NULL, m_hInstance, NULL);
+
+    SetWindowLongPtr(hdlg, DWLP_DLGPROC, (LPARAM) About);
+
+
+    std::cout << "Showing dialog box\n";*/
 }
 
 bool Window::ProcessMessages()

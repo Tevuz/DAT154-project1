@@ -20,6 +20,8 @@ public:
     void update();
     void input(WPARAM e);
 
+    void showDialog();
+
     void setRenderCallback(std::function<void(GraphicEngine)> render);
     void setUpdateCallback(std::function<void(float delta)> update);
     void setInputCallback(std::function<void(WPARAM)> input);
@@ -34,4 +36,5 @@ private:
     std::function<void(GraphicEngine)> m_hRender = [](auto){};
     std::function<void(float)> m_hUpdate = [](float){};
     std::function<void(WPARAM)> m_hInput = [](WPARAM){};
+
 };
