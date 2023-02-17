@@ -38,9 +38,7 @@ const float LIGHT_POSITION = -ROAD_WIDTH;
 const int LIGHT_WIDTH = 30;
 
 float X_SPAWN_RATE = 0.1f;
-float X_SPAWN_ACC = 0.0f;
 float Y_SPAWN_RATE = 0.1f;
-float Y_SPAWN_ACC = 0.0f;
 
 std::deque<Car>* x_cars;
 std::deque<Car>* y_cars;
@@ -119,12 +117,9 @@ void Program::update(float delta)
         x_cars->pop_front();
 
     // spawn cars x
-    if (x_cars->empty() || (car = x_cars->back(), car.pos - car.len - MIN_DISTANCE > BEGIN_POSITION))
-    {
-        X_SPAWN_ACC += ((float) rand() / (float) RAND_MAX)  * delta;
-        if (X_SPAWN_ACC > 1.0 - X_SPAWN_RATE) {
+    if (x_cars->empty() || (car = x_cars->back(), car.pos - car.len - MIN_DISTANCE > BEGIN_POSITION)){
+        if (((float) rand() / (float) RAND_MAX) < X_SPAWN_RATE  * delta) {
             x_cars->push_back({BEGIN_POSITION, 0, 0, 0});
-            X_SPAWN_ACC = 0.0f;
         }
     }
 
@@ -133,10 +128,8 @@ void Program::update(float delta)
         y_cars->pop_front();
     // spawn cars y
     if (y_cars->empty() || (car = y_cars->back(), car.pos - car.len - MIN_DISTANCE > BEGIN_POSITION)){
-        Y_SPAWN_ACC += ((float) rand() / (float) RAND_MAX)  * delta;
-        if (Y_SPAWN_ACC > 1.0 - Y_SPAWN_RATE) {
+        if (((float) rand() / (float) RAND_MAX) < Y_SPAWN_RATE  * delta) {
             y_cars->push_back({BEGIN_POSITION, 0, 0, 0});
-            Y_SPAWN_ACC = 0.0f;
         }
     }
 }
@@ -153,20 +146,20 @@ void Program::input(WPARAM param)
             y_light->state &= 3;
             break;
         case VK_LEFT:
-            std::cout << "decreasing x spawn rate" << std::endl;
             X_SPAWN_RATE = std::max(X_SPAWN_RATE - 0.1f, 0.0f);
+            std::cout << "decreasing x spawn rate to " << X_SPAWN_RATE << std::endl;
             break;
         case VK_RIGHT:
-            std::cout << "increasing x spawn rate" << std::endl;
             X_SPAWN_RATE = std::min(X_SPAWN_RATE + 0.1f, 1.0f);
+            std::cout << "increasing x spawn rate to " << X_SPAWN_RATE << std::endl;
             break;
         case VK_UP:
-            std::cout << "increasing y spawn rate" << std::endl;
             Y_SPAWN_RATE = std::min(Y_SPAWN_RATE + 0.1f, 1.0f);
+            std::cout << "increasing y spawn rate to " << Y_SPAWN_RATE << std::endl;
             break;
         case VK_DOWN:
-            std::cout << "decreasing y spawn rate" << std::endl;
             Y_SPAWN_RATE = std::max(Y_SPAWN_RATE - 0.1f, 0.0f);
+            std::cout << "decreasing y spawn rate to" << Y_SPAWN_RATE << std::endl;
             break;
     }
 }
@@ -250,4 +243,7 @@ void Program::render(GraphicEngine g)
     else
         g.setFillColor(0, 64, 0);
     g.fillEllipse((g.width >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH*3), (g.height >> 1) + (ROAD_WIDTH >> 1) - 2, LIGHT_WIDTH, LIGHT_WIDTH);
+
+    // text
+
 }
