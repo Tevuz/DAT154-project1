@@ -18,10 +18,16 @@ public:
     void fillRect(int px, int py, int width, int height);
     void fillEllipse(int px, int py, int width, int height);
 
+    void setFont();
+    void setTextColor(int r, int g, int b);
+    void drawText(char* s);
+
 
 private:
     HWND m_window;
     HDC m_context;
+    HDC m_secondary;
+    HBITMAP m_bitmap;
     PAINTSTRUCT m_struct;
     HBRUSH m_brush;
     HPEN m_pen;

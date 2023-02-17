@@ -2,14 +2,17 @@
 #include "GraphicEngine.h"
 
 GraphicEngine::GraphicEngine(HWND hWnd) {
-    m_struct;
-    m_context = BeginPaint(hWnd, &m_struct);
-
     const RECT winDefaultBorder {7, 30 , 7, 7};
     RECT rect;
     GetWindowRect(hWnd, &rect);
     width = rect.right - rect.left - winDefaultBorder.left - winDefaultBorder.right;
     height = rect.bottom - rect.top - winDefaultBorder.top - winDefaultBorder.bottom;
+
+    m_struct;
+    m_context = BeginPaint(hWnd, &m_struct);
+    m_secondary = CreateCompatibleDC(m_context);
+    m_bitmap = CreateCompatibleBitmap(m_context,width,height);
+    SelectObject(m_secondary, m_bitmap);
 
     m_brush = CreateSolidBrush(RGB(255,255,255));
     m_pen = CreatePen(PS_SOLID, 1, RGB(0,0,0));
@@ -20,6 +23,11 @@ GraphicEngine::~GraphicEngine() {
         DeleteObject(m_brush);
     if (m_pen != nullptr)
         DeleteObject(m_pen);
+
+    BitBlt(m_context, 0, 0, width, height, m_secondary, 0, 0, SRCCOPY);
+
+    DeleteDC(m_secondary);
+    DeleteObject(m_bitmap);
 
     EndPaint(m_window, &m_struct);
 }
@@ -49,21 +57,31 @@ void GraphicEngine::setLineColor(int r, int g, int b) {
     m_pen = CreatePen(PS_SOLID, 1, RGB(r,g,b));
 }
 
-void GraphicEngine::select()
-{
-        if (m_brush != nullptr)
-        SelectObject(m_context, m_brush);
-        if (m_pen != nullptr)
-        SelectObject(m_context, m_pen);
+void GraphicEngine::select() {
+    if (m_brush != nullptr)
+    SelectObject(m_secondary, m_brush);
+    if (m_pen != nullptr)
+    SelectObject(m_secondary, m_pen);
 };
 
 void GraphicEngine::fillRect(int px, int py, int width, int height) {
     select();
-    Rectangle(m_context, px, py, px + width, py + height);
+    Rectangle(m_secondary, px, py, px + width, py + height);
 }
 
 void GraphicEngine::fillEllipse(int px, int py, int width, int height) {
     select();
-    Ellipse(m_context, px, py, px + width, py + height);
+    Ellipse(m_secondary, px, py, px + width, py + height);
+}
+
+void GraphicEngine::setFont() {
+
+}
+
+void GraphicEngine::setTextColor(int r, int g, int b) {
+
+}
+
+void GraphicEngine::drawText(char* txt) {
 }
 

@@ -15,6 +15,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 Window::instance->update();
             InvalidateRect(hWnd, 0, true);
             break;
+        case WM_ERASEBKGND:
+            return TRUE;
         case WM_PAINT:
             if (Window::instance != NULL){
                 GraphicEngine* g = new GraphicEngine(hWnd);
