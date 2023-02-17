@@ -31,7 +31,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case WM_KEYDOWN:
             if (Window::instance != NULL)
                 Window::instance->input(wParam);
-            std::cout << "keydown " << wParam << std::endl;
             break;
     }
 
