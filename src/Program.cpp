@@ -140,7 +140,7 @@ void Program::update(float delta)
     }
 }
 
-void Program::input(Event e)
+void Program::input(WPARAM param)
 {
     x_light->state++;
     x_light->state &= 3;
