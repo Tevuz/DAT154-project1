@@ -1,8 +1,6 @@
 #include "Program.h"
 #include <iostream>
 #include <vector>
-#include <ntdef.h>
-#include <commctrl.h>
 #include <queue>
 
 struct Car
@@ -55,6 +53,7 @@ Program::Program()
     x_light = new TrafficLight();
     x_light->state = GO;
     y_light = new TrafficLight();
+    y_light->state = STOP;
 
     //x_cars->push_back({BEGIN_POSITION, 0, 0, 0});
     //y_cars->push_back({BEGIN_POSITION, 0, 0, 0});

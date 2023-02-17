@@ -5,7 +5,6 @@
 #include <functional>
 #include <map>
 #include "GraphicEngine.h"
-#include "Keymap.h"
 
 using Event = TrafficApp::Event;
 
