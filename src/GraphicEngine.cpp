@@ -40,6 +40,13 @@ void GraphicEngine::setFillColorDisabled() {
         DeleteObject(m_brush);
 }
 
+void GraphicEngine::setFillColor(int bgr8) {
+    if (m_brush != nullptr)
+        DeleteObject(m_brush);
+
+    m_brush = CreateSolidBrush(bgr8);
+}
+
 void GraphicEngine::setFillColor(int r, int g, int b) {
     if (m_brush != nullptr)
         DeleteObject(m_brush);

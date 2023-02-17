@@ -9,9 +9,12 @@ struct Car
     float pos;
     float vel;
     float acc;
-    float len;
+    uint8_t col_id;
     bool enabled = true;
 };
+
+const int colors[] {0x00f08030, 0x0080f030, 0x00303030, 0x003080f0, 0x00f0f0f0, 0x003030f0, 0x0030f0f0, 0x00f03030};
+const int num_colors = sizeof (colors) / sizeof(int);
 
 const int STOP = 0;
 const int READY = 1;
@@ -120,7 +123,7 @@ void Program::update(float delta)
     // spawn cars x
     if (x_cars->empty() || (car = x_cars->back(), car.pos - car.len - MIN_DISTANCE > BEGIN_POSITION)){
         if (((float) rand() / (float) RAND_MAX) < X_SPAWN_RATE  * delta) {
-            x_cars->push_back({BEGIN_POSITION, 0, 0, 0});
+            x_cars->push_back({BEGIN_POSITION, 0, 0, (uint8_t) (rand() % num_colors), true});
         }
     }
 
@@ -130,7 +133,7 @@ void Program::update(float delta)
     // spawn cars y
     if (y_cars->empty() || (car = y_cars->back(), car.pos - car.len - MIN_DISTANCE > BEGIN_POSITION)){
         if (((float) rand() / (float) RAND_MAX) < Y_SPAWN_RATE  * delta) {
-            y_cars->push_back({BEGIN_POSITION, 0, 0, 0});
+            y_cars->push_back({BEGIN_POSITION, 0, 0, (uint8_t) (rand() % num_colors), true});
         }
     }
 }
@@ -192,13 +195,16 @@ void Program::render(GraphicEngine g)
     }
 
     // cars
-    g.setFillColor(255, 64, 64);
-    for (auto car = x_cars->begin(); car != x_cars->end(); car++)
+    for (auto car = x_cars->begin(); car != x_cars->end(); car++){
+        g.setFillColor(colors[car->col_id]);
         g.fillRect((g.width >> 1) + car->pos, (g.height >> 1) + (ROAD_WIDTH >> 2) - (CAR_WIDTH >> 1) - (ROAD_STRIPE_WIDTH >> 2), CAR_LENGTH, CAR_WIDTH);
+    }
 
     g.setFillColor(64, 64, 255);
-    for (auto car = y_cars->begin(); car != y_cars->end(); car++)
+    for (auto car = y_cars->begin(); car != y_cars->end(); car++) {
+        g.setFillColor(colors[car->col_id]);
         g.fillRect((g.width >> 1) - (ROAD_WIDTH >> 2) - (CAR_WIDTH >> 1) - (ROAD_STRIPE_WIDTH >> 2), (g.height >> 1) + car->pos, CAR_WIDTH, CAR_LENGTH);
+    }
 
 
     // lights

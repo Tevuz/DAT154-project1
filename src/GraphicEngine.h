@@ -14,6 +14,7 @@ public:
     void setLineColorDisabled();
     void setLineColor(int r, int g, int b);
     void setFillColorDisabled();
+    void setFillColor(int rgb);
     void setFillColor(int r, int g, int b);
 
     void fillRect(int px, int py, int width, int height);
