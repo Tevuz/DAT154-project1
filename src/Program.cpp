@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <sstream>
 
 struct Car
 {
@@ -245,5 +246,18 @@ void Program::render(GraphicEngine g)
     g.fillEllipse((g.width >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH*3), (g.height >> 1) + (ROAD_WIDTH >> 1) - 2, LIGHT_WIDTH, LIGHT_WIDTH);
 
     // text
+    std::ostringstream oss;
 
+    oss << "Number of cars: " << (x_cars->size() + y_cars->size()) << "(North: " << (y_cars->size()) << ", West: " << (x_cars->size()) << ")";
+    g.drawText(oss.str(), 0, 0);
+
+    oss.str("");
+    oss.clear();
+    oss << "Probability car spawn from north: " << Y_SPAWN_RATE * 100 << "%";
+    g.drawText(oss.str(), 0, 20);
+
+    oss.str("");
+    oss.clear();
+    oss << "Probability car spawn from west: " << X_SPAWN_RATE * 100 << "%";
+    g.drawText(oss.str(), 0, 40);
 }

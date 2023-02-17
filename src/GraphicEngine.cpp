@@ -1,4 +1,3 @@
-#include <iostream>
 #include "GraphicEngine.h"
 
 GraphicEngine::GraphicEngine(HWND hWnd) {
@@ -82,6 +81,9 @@ void GraphicEngine::setTextColor(int r, int g, int b) {
 
 }
 
-void GraphicEngine::drawText(char* txt) {
+void GraphicEngine::drawText(std::string text, int x, int y) {
+    std::wstring temp = std::wstring(text.begin(), text.end());
+    LPCWSTR data = temp.c_str();
+    TextOutW(m_secondary, x, y, data, text.length());
 }
 

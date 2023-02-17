@@ -1,6 +1,7 @@
 #pragma once
 
 #include <windows.h>
+#include <iostream>
 
 class GraphicEngine {
 public:
@@ -20,7 +21,7 @@ public:
 
     void setFont();
     void setTextColor(int r, int g, int b);
-    void drawText(char* s);
+    void drawText(std::string txt, int x, int y);
 
 
 private:
