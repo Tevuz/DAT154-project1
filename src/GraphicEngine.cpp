@@ -23,6 +23,9 @@ GraphicEngine::~GraphicEngine() {
     if (m_pen != nullptr)
         DeleteObject(m_pen);
 
+    SelectObject(m_context, brush_orig);
+    SelectObject(m_context, pen_orig);
+
     BitBlt(m_context, 0, 0, width, height, m_secondary, 0, 0, SRCCOPY);
 
     DeleteDC(m_context);
@@ -59,9 +62,9 @@ void GraphicEngine::setLineColor(int r, int g, int b) {
 
 void GraphicEngine::select() {
     if (m_brush != nullptr)
-    SelectObject(m_secondary, m_brush);
+        brush_orig = SelectObject(m_secondary, m_brush);
     if (m_pen != nullptr)
-    SelectObject(m_secondary, m_pen);
+        pen_orig = SelectObject(m_secondary, m_pen);
 };
 
 void GraphicEngine::fillRect(int px, int py, int width, int height) {

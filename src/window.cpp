@@ -44,9 +44,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             return TRUE;
         case WM_PAINT:
             if (Window::instance != NULL){
-                GraphicEngine* g = new GraphicEngine(hWnd);
-                Window::instance->render(*g);
-                delete g;
+                GraphicEngine* graphics = new GraphicEngine(hWnd);
+                Window::instance->render(*graphics);
+                delete graphics;
             }
             break;
         case WM_LBUTTONDOWN:

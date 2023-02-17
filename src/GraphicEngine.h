@@ -33,6 +33,9 @@ private:
     HBRUSH m_brush;
     HPEN m_pen;
 
+    HGDIOBJ brush_orig;
+    HGDIOBJ pen_orig;
+
     void select();
 };
 
