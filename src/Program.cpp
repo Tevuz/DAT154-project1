@@ -142,12 +142,32 @@ void Program::update(float delta)
 
 void Program::input(WPARAM param)
 {
-    x_light->state++;
-    x_light->state &= 3;
+    switch (param)
+    {
+        case VK_LBUTTON:
+            x_light->state++;
+            x_light->state &= 3;
 
-    y_light->state++;
-    y_light->state &= 3;
-    // TODO: traffic light improvement
+            y_light->state++;
+            y_light->state &= 3;
+            break;
+        case VK_LEFT:
+            std::cout << "decreasing x spawn rate" << std::endl;
+            X_SPAWN_RATE = std::max(X_SPAWN_RATE - 0.1f, 0.0f);
+            break;
+        case VK_RIGHT:
+            std::cout << "increasing x spawn rate" << std::endl;
+            X_SPAWN_RATE = std::min(X_SPAWN_RATE + 0.1f, 1.0f);
+            break;
+        case VK_UP:
+            std::cout << "increasing y spawn rate" << std::endl;
+            Y_SPAWN_RATE = std::min(Y_SPAWN_RATE + 0.1f, 1.0f);
+            break;
+        case VK_DOWN:
+            std::cout << "decreasing y spawn rate" << std::endl;
+            Y_SPAWN_RATE = std::max(Y_SPAWN_RATE - 0.1f, 0.0f);
+            break;
+    }
 }
 
 void Program::render(GraphicEngine g)
