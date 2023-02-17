@@ -45,10 +45,10 @@ const float TARGET_POSITION = INFINITY;
 const float LIGHT_POSITION = -ROAD_WIDTH;
 const int LIGHT_WIDTH = 30;
 
-float X_SPAWN_RATE = 0.1f;
+float X_SPAWN_RATE = 1.0f;
 float X_SPAWN_TIME = 0.0f;
 float X_SPAWN_ROLL = 0.0f;
-float Y_SPAWN_RATE = 0.1f;
+float Y_SPAWN_RATE = 0.3f;
 float Y_SPAWN_TIME = 0.0f;
 float Y_SPAWN_ROLL = 0.0f;
 
@@ -76,11 +76,23 @@ Program::~Program()
     delete[] y_cars;
 }
 
+void Program::update(float delta, WPARAM param)
+{
+    switch (param) {
+        case Window::TIMER_UPDATE_PHYSICS:
+            updatePhysics(delta);
+            break;
+        case Window::TIMER_UPDATE_LIGHTS:
+            updateLights(delta);
+            break;
+    }
+}
+
 float updateCar(Car* car, TrafficLight light, float pos_next, float delta)
 {
     float target = pos_next - car->pos - DISTANCE_MIN;
 
-    if (light.state != GO && car->pos < LIGHT_POSITION + DISTANCE_MIN && pos_next > LIGHT_POSITION + DISTANCE_MIN)
+    if (light.state != GO && car->pos < LIGHT_POSITION && pos_next > LIGHT_POSITION + DISTANCE_MIN)
         target = LIGHT_POSITION - car->pos;
 
     float distance = abs(target);
@@ -105,8 +117,7 @@ float updateCar(Car* car, TrafficLight light, float pos_next, float delta)
     return car->pos - CAR_LENGTH;
 }
 
-void Program::update(float delta)
-{
+void Program::updatePhysics(float delta){
     float pos_next;
 
     // update cars x
@@ -139,6 +150,10 @@ void Program::update(float delta)
     }
 
     // despawn cars y
+    while (!y_cars->empty() && !y_cars->front().enabled)
+        y_cars->pop_front();
+
+    // spawn cars y
     Y_SPAWN_TIME += delta;
     if (Y_SPAWN_ROLL < (1.0 - std::exp(-Y_SPAWN_RATE * Y_SPAWN_TIME))) {
         float pos;
@@ -152,16 +167,31 @@ void Program::update(float delta)
     }
 }
 
+void Program::updateLights(float delta) {
+    x_light->state++;
+    x_light->state &= 3;
+
+    y_light->state++;
+    y_light->state &= 3;
+
+    switch (x_light->state) {
+        case GO:
+        case STOP:
+            Window::instance->setTimer(Window::TIMER_UPDATE_LIGHTS, 15000.0);
+            break;
+        case READY:
+        case YIELD:
+            Window::instance->setTimer(Window::TIMER_UPDATE_LIGHTS, 2500.0);
+            break;
+    }
+}
+
 void Program::input(WPARAM param)
 {
     switch (param)
     {
         case VK_LBUTTON:
-            x_light->state++;
-            x_light->state &= 3;
-
-            y_light->state++;
-            y_light->state &= 3;
+            updateLights(NULL);
             break;
         case VK_LEFT:
             X_SPAWN_RATE = std::max(X_SPAWN_RATE - 0.1f, 0.0f);

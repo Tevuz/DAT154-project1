@@ -37,7 +37,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             return 0;
         case WM_TIMER:
             if (Window::instance != NULL)
-                Window::instance->update();
+                Window::instance->update(wParam);
             InvalidateRect(hWnd, 0, true);
             break;
         case WM_ERASEBKGND:
@@ -120,8 +120,8 @@ Window::~Window()
 void Window::start()
 {
     ShowWindow(m_hWnd, SW_SHOW);
-    SetTimer(m_hWnd, TIMER_MAIN, 1000.0/60.0, NULL);
-
+    setTimer(TIMER_UPDATE_PHYSICS, 1000.0/60.0);
+    setTimer(TIMER_UPDATE_LIGHTS, 6000.0);
 }
 
 void Window::showDialog(){
@@ -166,12 +166,16 @@ bool Window::ProcessMessages()
 }
 
 void Window::render(GraphicEngine hWnd) { m_hRender(hWnd); }
-void Window::update() { m_hUpdate(delta); }
+void Window::update(WPARAM param) { m_hUpdate(delta, param); }
 void Window::input(WPARAM param) { m_hInput(param); }
 
 void Window::setRenderCallback(std::function<void(GraphicEngine)> render) { m_hRender = render; }
-void Window::setUpdateCallback(std::function<void(float)> update) { m_hUpdate = update; }
+void Window::setUpdateCallback(std::function<void(float, WPARAM)> update) { m_hUpdate = update; }
 void Window::setInputCallback(std::function<void(WPARAM)> input) { m_hInput = input; }
+
+void Window::setTimer(UINT_PTR timer, UINT period) {
+    SetTimer(m_hWnd, timer, period, NULL);
+}
 
 
 

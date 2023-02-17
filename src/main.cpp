@@ -12,7 +12,7 @@ int main() {
     Window* pWindow = new Window();
 
     pWindow->setRenderCallback([pProgram](auto hWnd){ pProgram->render(hWnd); });
-    pWindow->setUpdateCallback([pProgram](float delta){ pProgram->update(delta); });
+    pWindow->setUpdateCallback([pProgram](float delta, WPARAM param){ pProgram->update(delta, param); });
     pWindow->setInputCallback([pProgram](auto event) { pProgram->input(event); });
 
     pWindow->start();
