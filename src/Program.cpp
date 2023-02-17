@@ -3,6 +3,7 @@
 #include <vector>
 #include <ntdef.h>
 #include <commctrl.h>
+#include <queue>
 
 struct Car
 {
@@ -10,6 +11,7 @@ struct Car
     float vel;
     float acc;
     float len;
+    bool enabled = true;
 };
 
 const int STOP = 0;
@@ -31,34 +33,30 @@ const float MIN_DISTANCE = 30.0;
 const float STOPPING_DISTANCE = MIN_DISTANCE * 2.5f;
 
 const float BEGIN_POSITION = -800.0;
-const float END_POSITION = 600.0;
+const float END_POSITION = 800.0;
+const float TARGET_POSITION = 2000.0;
 const float LIGHT_POSITION = -ROAD_WIDTH;
 
-// TODO: use a pool structure
-std::vector<Car>* x_cars;
-std::vector<Car>* y_cars;
+float X_SPAWN_RATE = 0.1f;
+float X_SPAWN_ACC = 0.0f;
+float Y_SPAWN_RATE = 0.1f;
+float Y_SPAWN_ACC = 0.0f;
+
+std::deque<Car>* x_cars;
+std::deque<Car>* y_cars;
 
 TrafficLight* x_light;
 TrafficLight* y_light;
 
 Program::Program()
 {
-    x_cars = new std::vector<Car>;
-    y_cars = new std::vector<Car>;
+    x_cars = new std::deque<Car>;
+    y_cars = new std::deque<Car>;
     x_light = new TrafficLight();
     x_light->state = GO;
     y_light = new TrafficLight();
 
-    x_cars->push_back({BEGIN_POSITION, 0, 0, 0});
-    x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE), 0, 0, 0});
-    x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 2.0f, 0, 0, 0});
-    x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 3.0f, 0, 0, 0});
-    x_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 4.0f, 0, 0, 0});
-
-    y_cars->push_back({BEGIN_POSITION, 0, 0, 0});
-    y_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE), 0, 0, 0});
-    y_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 2.0f, 0, 0, 0});
-    y_cars->push_back({BEGIN_POSITION - (CAR_LENGTH + MIN_DISTANCE) * 3.0f, 0, 0, 0});
+    //x_cars->push_back({BEGIN_POSITION, 0, 0, 0});
     //y_cars->push_back({BEGIN_POSITION, 0, 0, 0});
 }
 
@@ -83,7 +81,6 @@ float updateCar(Car* car, TrafficLight light, float pos_next, float delta)
     car->vel = std::min(+CAR_SPEED, car->vel);
     car->vel = std::max(-CAR_SPEED, car->vel);
 
-
     float distance = abs(target);
 
     float s = CAR_SPEED * std::min(1.0f, distance / STOPPING_DISTANCE);
@@ -94,23 +91,53 @@ float updateCar(Car* car, TrafficLight light, float pos_next, float delta)
     car->acc = std::min(+200.0f, car->acc);
     car->acc = std::max(-200.0f, car->acc);
 
+    if (car->pos > END_POSITION)
+        car->enabled = false;
+
     return car->pos - CAR_LENGTH;
 }
 
-void Program::update()
+void Program::update(float delta)
 {
-    float delta = 1.0f / 60.0f;
     float pos_next;
 
-    pos_next = END_POSITION;
+    // update cars x
+    pos_next = TARGET_POSITION;
     for (auto car = x_cars->begin(); car != x_cars->end(); car++)
         pos_next = updateCar(&*car, *x_light, pos_next, delta);
 
-    pos_next = END_POSITION;
+    // update cars y
+    pos_next = TARGET_POSITION;
     for (auto car = y_cars->begin(); car != y_cars->end(); car++)
         pos_next = updateCar(&*car, *y_light, pos_next, delta);
 
-    // TODO: car spawn and despawn
+    Car car;
+
+    // despawn cars x
+    while (!x_cars->empty() && !x_cars->front().enabled)
+        x_cars->pop_front();
+
+    // spawn cars x
+    if (x_cars->empty() || (car = x_cars->back(), car.pos - car.len - MIN_DISTANCE > BEGIN_POSITION))
+    {
+        X_SPAWN_ACC += ((float) rand() / (float) RAND_MAX)  * delta;
+        if (X_SPAWN_ACC > 1.0 - X_SPAWN_RATE) {
+            x_cars->push_back({BEGIN_POSITION, 0, 0, 0});
+            X_SPAWN_ACC = 0.0f;
+        }
+    }
+
+    // despawn cars y
+    while (!y_cars->empty() && !y_cars->front().enabled)
+        y_cars->pop_front();
+    // spawn cars y
+    if (y_cars->empty() || (car = y_cars->back(), car.pos - car.len - MIN_DISTANCE > BEGIN_POSITION)){
+        Y_SPAWN_ACC += ((float) rand() / (float) RAND_MAX)  * delta;
+        if (Y_SPAWN_ACC > 1.0 - Y_SPAWN_RATE) {
+            y_cars->push_back({BEGIN_POSITION, 0, 0, 0});
+            Y_SPAWN_ACC = 0.0f;
+        }
+    }
 }
 
 void Program::input(Event e)

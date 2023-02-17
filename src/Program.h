@@ -11,7 +11,7 @@ public:
     Program();
     ~Program();
 
-    void update();
-    void input(Event e);
+    void update(float delta);
+    void input(WPARAM param);
     void render(GraphicEngine g);
 };

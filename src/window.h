@@ -21,18 +21,20 @@ public:
     void start();
     void render(GraphicEngine hWnd);
     void update();
-    void input(Event e);
+    void input(WPARAM e);
 
     void setRenderCallback(std::function<void(GraphicEngine)> render);
-    void setUpdateCallback(std::function<void()> update);
-    void setInputCallback(std::function<void(Event)> input);
+    void setUpdateCallback(std::function<void(float delta)> update);
+    void setInputCallback(std::function<void(WPARAM)> input);
 
     bool ProcessMessages();
 private:
     HINSTANCE m_hInstance;
     HWND m_hWnd;
 
-    std::function<void(GraphicEngine)> m_hRender = [](auto a){};
-    std::function<void()> m_hUpdate = [](){};
-    std::function<void(Event)> m_hInput = [](auto e){};
+    const float delta = 1.0 / 60.0;
+
+    std::function<void(GraphicEngine)> m_hRender = [](auto){};
+    std::function<void(float)> m_hUpdate = [](float){};
+    std::function<void(WPARAM)> m_hInput = [](WPARAM){};
 };

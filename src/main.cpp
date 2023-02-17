@@ -12,8 +12,8 @@ int main() {
     Window* pWindow = new Window();
 
     pWindow->setRenderCallback([pProgram](auto hWnd){ pProgram->render(hWnd); });
-    pWindow->setUpdateCallback([pProgram](){ pProgram->update(); });
-    pWindow->setInputCallback([pProgram](auto e) { pProgram->input(e); });
+    pWindow->setUpdateCallback([pProgram](float delta){ pProgram->update(delta); });
+    pWindow->setInputCallback([pProgram](auto event) { pProgram->input(event); });
 
     pWindow->start();
 

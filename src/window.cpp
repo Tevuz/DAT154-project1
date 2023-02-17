@@ -24,7 +24,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             break;
         case WM_LBUTTONDOWN:
             if (Window::instance != NULL)
-                Window::instance->input(TrafficApp::MOUSE_LCLICK);
+                Window::instance->input(VK_LBUTTON);
+            break;
+        case WM_KEYDOWN:
+            if (Window::instance != NULL)
+                Window::instance->input(wParam);
+            std::cout << "keydown " << wParam << std::endl;
             break;
     }
 
@@ -108,12 +113,12 @@ bool Window::ProcessMessages()
 }
 
 void Window::render(GraphicEngine hWnd) { m_hRender(hWnd); }
-void Window::update() { m_hUpdate(); }
-void Window::input(Event e) { m_hInput(e); }
+void Window::update() { m_hUpdate(delta); }
+void Window::input(WPARAM param) { m_hInput(param); }
 
 void Window::setRenderCallback(std::function<void(GraphicEngine)> render) { m_hRender = render; }
-void Window::setUpdateCallback(std::function<void()> update) { m_hUpdate = update; }
-void Window::setInputCallback(std::function<void(Event)> input) { m_hInput = input; }
+void Window::setUpdateCallback(std::function<void(float)> update) { m_hUpdate = update; }
+void Window::setInputCallback(std::function<void(WPARAM)> input) { m_hInput = input; }
 
 
 
