@@ -25,6 +25,7 @@ GraphicEngine::~GraphicEngine() {
 
     BitBlt(m_context, 0, 0, width, height, m_secondary, 0, 0, SRCCOPY);
 
+    DeleteDC(m_context);
     DeleteDC(m_secondary);
     DeleteObject(m_bitmap);
 
