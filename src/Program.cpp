@@ -33,7 +33,9 @@ const float STOPPING_DISTANCE = MIN_DISTANCE * 2.5f;
 const float BEGIN_POSITION = -800.0;
 const float END_POSITION = 800.0;
 const float TARGET_POSITION = 2000.0;
+
 const float LIGHT_POSITION = -ROAD_WIDTH;
+const int LIGHT_WIDTH = 30;
 
 float X_SPAWN_RATE = 0.1f;
 float X_SPAWN_ACC = 0.0f;
@@ -206,5 +208,46 @@ void Program::render(GraphicEngine g)
 
 
     // lights
-    // TODO: lights graphic
+
+    // light y
+    g.setFillColor(32, 32, 32);
+    g.fillRect((g.width >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH), (g.height >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH * 3), LIGHT_WIDTH, LIGHT_WIDTH * 3);
+
+    if (y_light->state == STOP || y_light->state == READY)
+        g.setFillColor(255, 0, 0);
+    else
+        g.setFillColor(64, 0, 0);
+    g.fillEllipse((g.width >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH), (g.height >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH * 1), LIGHT_WIDTH, LIGHT_WIDTH);
+    if (y_light->state == YIELD || y_light->state == READY)
+        g.setFillColor(255, 128, 0);
+    else
+        g.setFillColor(64, 32, 0);
+    g.fillEllipse((g.width >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH), (g.height >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH * 2), LIGHT_WIDTH, LIGHT_WIDTH);
+    if (y_light->state == GO)
+        g.setFillColor(0, 255, 0);
+    else
+        g.setFillColor(0, 64, 0);
+    g.fillEllipse((g.width >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH), (g.height >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH * 3), LIGHT_WIDTH, LIGHT_WIDTH);
+
+    // light x
+    g.setFillColor(32, 32, 32);
+    g.fillRect((g.width >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH*3), (g.height >> 1) + (ROAD_WIDTH >> 1) - 2, LIGHT_WIDTH * 3, LIGHT_WIDTH);
+
+    if (x_light->state == STOP || x_light->state == READY)
+        g.setFillColor(255, 0, 0);
+    else
+        g.setFillColor(64, 0, 0);
+    g.fillEllipse((g.width >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH*1), (g.height >> 1) + (ROAD_WIDTH >> 1) - 2, LIGHT_WIDTH, LIGHT_WIDTH);
+
+    if (x_light->state == YIELD || x_light->state == READY)
+        g.setFillColor(255, 128, 0);
+    else
+        g.setFillColor(64, 32, 0);
+    g.fillEllipse((g.width >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH*2), (g.height >> 1) + (ROAD_WIDTH >> 1) - 2, LIGHT_WIDTH, LIGHT_WIDTH);
+
+    if (x_light->state == GO)
+        g.setFillColor(0, 255, 0);
+    else
+        g.setFillColor(0, 64, 0);
+    g.fillEllipse((g.width >> 1) - (ROAD_WIDTH >> 1) - (LIGHT_WIDTH*3), (g.height >> 1) + (ROAD_WIDTH >> 1) - 2, LIGHT_WIDTH, LIGHT_WIDTH);
 }

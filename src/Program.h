@@ -3,8 +3,6 @@
 #include <windows.h>
 #include "GraphicEngine.h"
 
-using Event = TrafficApp::Event;
-
 class Program {
 public:
     Program();

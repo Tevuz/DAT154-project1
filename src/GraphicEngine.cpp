@@ -62,8 +62,8 @@ void GraphicEngine::fillRect(int px, int py, int width, int height) {
     Rectangle(m_context, px, py, px + width, py + height);
 }
 
-void GraphicEngine::fillCircle(int px, int py, int radius) {
+void GraphicEngine::fillEllipse(int px, int py, int width, int height) {
     select();
-    Ellipse(m_context, px - radius, py - radius, radius, radius);
+    Ellipse(m_context, px, py, px + width, py + height);
 }
 

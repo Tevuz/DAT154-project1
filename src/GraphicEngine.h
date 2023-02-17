@@ -16,7 +16,7 @@ public:
     void setFillColor(int r, int g, int b);
 
     void fillRect(int px, int py, int width, int height);
-    void fillCircle(int px, int py, int radius);
+    void fillEllipse(int px, int py, int width, int height);
 
 
 private:

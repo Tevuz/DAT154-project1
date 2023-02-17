@@ -6,8 +6,6 @@
 #include <map>
 #include "GraphicEngine.h"
 
-using Event = TrafficApp::Event;
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 class Window {
