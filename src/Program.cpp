@@ -30,9 +30,12 @@ const int ROAD_STRIPE_LENGTH = 80;
 const int ROAD_STRIPE_WIDTH = 20;
 const int CAR_WIDTH = 50;
 const int CAR_LENGTH= 90;
-const float CAR_SPEED= 150;
-const float MIN_DISTANCE = 30.0;
-const float STOPPING_DISTANCE = MIN_DISTANCE * 2.5f;
+const float CAR_MAX_SPEED= 200.0f;
+const float CAR_MAX_ACCELERATION = 350.0f;
+const float CAR_FORCE_MULTIPLIER = 12.0f;
+const float DISTANCE_MIN = 20.0f;
+const float DISTANCE_DEADZONE = 5.0f;
+const float DISTANCE_TO_STOP = DISTANCE_MIN * 3.5f;
 
 const float BEGIN_POSITION = -800.0;
 const float END_POSITION = 800.0;
@@ -58,9 +61,6 @@ Program::Program()
     x_light->state = GO;
     y_light = new TrafficLight();
     y_light->state = STOP;
-
-    //x_cars->push_back({BEGIN_POSITION, 0, 0, 0});
-    //y_cars->push_back({BEGIN_POSITION, 0, 0, 0});
 }
 
 Program::~Program()
@@ -73,26 +73,26 @@ Program::~Program()
 
 float updateCar(Car* car, TrafficLight light, float pos_next, float delta)
 {
-    float target = pos_next - car->pos - MIN_DISTANCE;
+    float target = pos_next - car->pos - DISTANCE_MIN;
 
-    if (light.state != GO && car->pos < LIGHT_POSITION + MIN_DISTANCE && pos_next > LIGHT_POSITION + MIN_DISTANCE)
+    if (light.state != GO && car->pos < LIGHT_POSITION + DISTANCE_MIN && pos_next > LIGHT_POSITION + DISTANCE_MIN)
         target = LIGHT_POSITION - car->pos;
 
     car->pos += car->vel * delta;
 
     car->vel += car->acc * delta;
-    car->vel = std::min(+CAR_SPEED, car->vel);
-    car->vel = std::max(-CAR_SPEED, car->vel);
+    car->vel = std::min(+CAR_MAX_SPEED, car->vel);
+    car->vel = std::max(-CAR_MAX_SPEED, car->vel);
 
     float distance = abs(target);
 
-    float s = CAR_SPEED * std::min(1.0f, distance / STOPPING_DISTANCE);
+    float desired_speed = CAR_MAX_SPEED * std::min(1.0f, distance / DISTANCE_TO_STOP);
 
-    float f = distance < 5.0 ? -car->vel : s * target / distance - car->vel;
+    float force = distance < DISTANCE_DEADZONE ? -car->vel : desired_speed * target / distance - car->vel;
 
-    car->acc = f * 6.0f;
-    car->acc = std::min(+200.0f, car->acc);
-    car->acc = std::max(-200.0f, car->acc);
+    car->acc = force * CAR_FORCE_MULTIPLIER;
+    car->acc = std::min(+CAR_MAX_ACCELERATION, car->acc);
+    car->acc = std::max(-CAR_MAX_ACCELERATION, car->acc);
 
     if (car->pos > END_POSITION)
         car->enabled = false;
@@ -121,7 +121,7 @@ void Program::update(float delta)
         x_cars->pop_front();
 
     // spawn cars x
-    if (x_cars->empty() || (car = x_cars->back(), car.pos - car.len - MIN_DISTANCE > BEGIN_POSITION)){
+    if (x_cars->empty() || (car = x_cars->back(), car.pos - CAR_LENGTH - DISTANCE_MIN > BEGIN_POSITION)){
         if (((float) rand() / (float) RAND_MAX) < X_SPAWN_RATE  * delta) {
             x_cars->push_back({BEGIN_POSITION, 0, 0, (uint8_t) (rand() % num_colors), true});
         }
@@ -131,7 +131,7 @@ void Program::update(float delta)
     while (!y_cars->empty() && !y_cars->front().enabled)
         y_cars->pop_front();
     // spawn cars y
-    if (y_cars->empty() || (car = y_cars->back(), car.pos - car.len - MIN_DISTANCE > BEGIN_POSITION)){
+    if (y_cars->empty() || (car = y_cars->back(), car.pos - CAR_LENGTH - DISTANCE_MIN > BEGIN_POSITION)){
         if (((float) rand() / (float) RAND_MAX) < Y_SPAWN_RATE  * delta) {
             y_cars->push_back({BEGIN_POSITION, 0, 0, (uint8_t) (rand() % num_colors), true});
         }
