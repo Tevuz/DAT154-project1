@@ -12,7 +12,7 @@ Graphics and timers in SDK.
 - done
 
 ### Part 3: Timer
-- missing: traffic lights are manual with mouse click
+- done
 
 ### Part 4: Cars 
 - done
